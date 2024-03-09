@@ -7,6 +7,7 @@ const SearchBar = ({ onSubmit, link, setLink }) => {
   const [check, setCheck] = useState(0)
   const notify = () => toast("No Keyword Found!", { type: "error", theme: 'dark' });
   const notify2 = () => toast("Fetching Data!", { type: "success",autoClose: 1000 , theme: 'dark' });
+  
 
   const handleChange = (e) => {
     link && setLink('')
@@ -18,6 +19,7 @@ const SearchBar = ({ onSubmit, link, setLink }) => {
     e.preventDefault();
     if (keyword === '') {
       notify();
+
     }
     else {
       notify2();
