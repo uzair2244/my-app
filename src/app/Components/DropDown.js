@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DropDown = ({val, site}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +16,9 @@ const DropDown = ({val, site}) => {
     { value: 5, label: '5 Days' },
   ];
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () =>
+  site === '' ? toast.error('choose a portal first') :
+  setIsOpen(!isOpen);
 
   const handleSelect = (value) => {
     // Handle selection logic here (e.g., update state or trigger an action)
