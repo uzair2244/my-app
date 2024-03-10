@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import xl from 'excel4node';
 
 export default async function handler(req, res) {
-  const { keyword } = req.query;
+  const { keyword, filter } = req.query;
 
   try {
     // 1. Launch headless Puppeteer browser (ensure environment variables are set)
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     await page.setViewport({ width: 1080, height: 1024 });
 
     // 2. Construct Indeed URL with keyword
-    const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keyword)}&l=united+states&sc=0kf%3Aattr%28DSQF7%29%3B&fromage=1`;
+    const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keyword)}&l=united+states&sc=0kf%3Aattr%28DSQF7%29%3B&fromage=${filter}`;
 
     // 3. Navigate to Indeed URL and wait for page to load
     await page.goto(url, { waitUntil: 'networkidle0' }); // Wait for network stability

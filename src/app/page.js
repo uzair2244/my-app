@@ -9,16 +9,21 @@ const Home = () => {
   const [key, setKey] = useState('');
   const [isLoading, setIsLoading] = useState(true); // Track loading state
 
-  const searchJobs = async (keyword) => {
+  const searchJobs = async (keyword, filter, portal) => {
     setKey(keyword);
     try {
       toast.info('dont close the browser', {autoClose: false, toastId: 'fetch-data', theme: 'dark'})
-      const response = await fetch(`/api/searchJobz?keyword=${keyword}`);
+      let rsp;
+      if(portal == 'indeed'){
+        rsp = await fetch(`/api/indeed?keyword=${keyword}&filter=${filter}`);
+      }else if(portal == 'zipRecruiter'){
+        rsp = await fetch(`/api/zipRecruiter?keyword=${keyword}&filter=${filter}`);
+      }
       toast.dismiss('fetch-data')
-      if (!response.ok) {
+      if (!rsp.ok) {
         throw new Error('Failed to fetch data'); // Handle non-2xx response codes
       }
-      const blob = await response.blob();
+      const blob = await rsp.blob();
       const url = window.URL.createObjectURL(blob);
       toast.success('Data fetched successfully!', {theme: 'dark', autoClose: 1000}); // Display success toast
       setExcelUrl(url);
