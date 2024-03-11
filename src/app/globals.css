@@ -7,3 +7,10 @@
     background-image: url('/bg2.jpeg');
 } */
 
+
+.text-glow {
+    /* Remove any background color from the element */
+    background-color: transparent;
+    /* Create an inner shadow to simulate a glow */
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  }

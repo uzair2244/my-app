@@ -41,7 +41,7 @@ const SearchBar = ({ onSubmit, link, setLink }) => {
       <ToastContainer />
       <form className=" flex items-center text-xl font-inter font-medium leading-loose flex-col gap-2 text-center" onSubmit={handleSubmit}>
 
-        <h1 className='font-bold text-white'>
+        <h1 className='font-bold text-white text-glow'>
           Job Search
         </h1>
         <div className='w-full flex flex-col items-center gap-1'>

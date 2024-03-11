@@ -61,11 +61,17 @@ export default async function handler(req, res) {
             ws.cell(1, 2).string("Title");
             ws.cell(1, 3).string("Link");
 
+            const linkStyle ={
+                font: {
+                  color: '#0000EE', // Blue color
+                }
+              };
+
             // Write scraped data to worksheet
             allJobsData.forEach((item, index) => {
                 ws.cell(index + 2, 1).string(item.company);
                 ws.cell(index + 2, 2).string(item.title);
-                ws.cell(index + 2, 3).string(item.link);
+                ws.cell(index + 2, 3).string(item.link).style(linkStyle);
             });
 
             // Generate Excel buffer and send response
