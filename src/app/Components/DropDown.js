@@ -6,7 +6,7 @@ const DropDown = ({val, site}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedVal, setSelectedVal] = useState(false);
 
-  const indeedOptions = [
+  const indeedTalentOptions = [
     { value: 1, label: '1 Day' },
     { value: 3, label: '3 Days' },
   ];
@@ -43,7 +43,7 @@ const DropDown = ({val, site}) => {
 
       {isOpen && (
         <div className="absolute right-0 z-10 w-44 mt-2 origin-top-right rounded-md shadow-lg bg-white dark:bg-gray-200 ring-1 ring-black ring-opacity-5 py-1 divide-y divide-gray-100">
-          {site === 'indeed' && indeedOptions.map((option) => (
+          {(site === 'indeed' || site === 'talent')&& indeedTalentOptions.map((option) => (
             <button
               key={option.value}
               type="button"

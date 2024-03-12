@@ -34,6 +34,18 @@ const JobPortalSelector = ({portalName}) => {
         />
         <TbZip size={30} color='lime' />
       </label>
+      <label htmlFor='talent' className='flex items-center cursor-pointer'>
+        <input
+          type='radio'
+          id='talent'
+          name='portal'
+          value='talent'
+          checked={selectedPortal === 'talent'}
+          onChange={handlePortalChange}
+        />
+        {/* <TbZip size={30} color='lime' /> */}
+        Talent
+      </label>
     </div>
   );
 };

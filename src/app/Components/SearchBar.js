@@ -48,7 +48,6 @@ const SearchBar = ({ onSubmit, link, setLink }) => {
           <input type="text" className='w-1/3 bg-gray-100 rounded-md pl-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#050708]/50 focus:ring-opacity-50 text-gray-500 drop-shadow-lg	' placeholder='Type here' value={keyword} onChange={handleChange} />
 
           <JobPortalSelector portalName={setPortal}/>
-
           <span><DropDown val={setFilter} site={portal}/></span>
         </div>
         {/* {check === 1 ? <span>write something</span> : null} */}

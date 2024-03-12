@@ -18,6 +18,8 @@ const Home = () => {
         rsp = await fetch(`/api/indeed?keyword=${keyword}&filter=${filter}`);
       }else if(portal == 'zipRecruiter'){
         rsp = await fetch(`/api/zipRecruiter?keyword=${keyword}&filter=${filter}`);
+      }else if(portal == 'talent'){
+        rsp = await fetch(`/api/talent?keyword=${keyword}&filter=${filter}`);
       }
       toast.dismiss('fetch-data')
       if (!rsp.ok) {
