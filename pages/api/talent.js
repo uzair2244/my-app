@@ -1,10 +1,12 @@
 import puppeteer from 'puppeteer';
 import xl from 'excel4node';
+import LinkedInPeople from './people.js'
 
 export default async function handler(req, res) {
     const { keyword, filter } = req.query;
-    const numPages = 3;
+    const numPages = 2;
     let allJobsData = [];
+    let allCompanies = [];
 
     try {
         const browser = await puppeteer.launch({
@@ -48,10 +50,11 @@ export default async function handler(req, res) {
                             link: `www.talent.com/${links[i]}`
                         }
                     })
-                    return data
+                    return { company: companys, data: data }
                 })
-                allJobsData.push(...newJobsData);
-                
+                allCompanies.push(...newJobsData.company);
+                allJobsData.push(...newJobsData.data);
+
 
                 const nextPageButton = await page.evaluate(() => {
                     const nextButton = document.querySelector('a[aria-label="Next Page"]');
@@ -68,6 +71,7 @@ export default async function handler(req, res) {
             };
 
             await browser.close();
+            const empName = await LinkedInPeople(allCompanies);
 
             const wb = new xl.Workbook();
             const ws = wb.addWorksheet('links_sheet');
@@ -75,6 +79,7 @@ export default async function handler(req, res) {
             ws.cell(1, 1).string("Company Name");
             ws.cell(1, 2).string("Title");
             ws.cell(1, 3).string("Link");
+            ws.cell(1, 4).string("People");
 
             const linkStyle = {
                 font: {
@@ -85,7 +90,12 @@ export default async function handler(req, res) {
             allJobsData.forEach((item, index) => {
                 ws.cell(index + 2, 1).string(item.company);
                 ws.cell(index + 2, 2).string(item.title);
-                ws.cell(index + 2, 3).string(item.link).style(linkStyle)
+                ws.cell(index + 2, 3).string(item.link).style(linkStyle);
+                if (empName[index]) { // Check if there is a corresponding people value
+                    ws.cell(index + 2, 4).string(empName[index]);
+                } else {
+                    ws.cell(index + 2, 4).string(" ");
+                }
             });
 
             wb.writeToBuffer().then((buffer) => {

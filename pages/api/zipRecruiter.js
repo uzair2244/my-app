@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import xl from 'excel4node';
+import LinkedInPeople from './people.js'
 
 export default async function handler(req, res) {
     const { keyword, filter } = req.query;
@@ -18,70 +19,80 @@ export default async function handler(req, res) {
         await page.click(".bg-black");
 
 
-            const allJobsData = [];
+        const allJobsData = [];
+        const allCompanies = [];
 
-            let currentPage = 1;
-            while (true) {
-                const newJobsData = await page.evaluate(() => {
-                    const titles = Array.from(document.querySelectorAll("h2 a")).map(el => el.textContent);
-                    const companys = Array.from(document.querySelectorAll("div.mt-\\[4px\\] div p")).map(el => el.textContent.trim());
-                    const links = Array.from(document.querySelectorAll("h2 a")).map(el => el.href);
+        let currentPage = 1;
+        while (true) {
+            const newJobsData = await page.evaluate(() => {
+                const titles = Array.from(document.querySelectorAll("h2 a")).map(el => el.textContent);
+                const companys = Array.from(document.querySelectorAll("div.mt-\\[4px\\] div p")).map(el => el.textContent.trim());
+                const links = Array.from(document.querySelectorAll("h2 a")).map(el => el.href);
 
-                    return titles.map((title, i) => ({
-                        company: companys[i],
-                        title,
-                        link: links[i],
-                    }));
-                });
+                const data = titles.map((title, i) => ({
+                    company: companys[i],
+                    title,
+                    link: links[i],
+                }));
+                return { company: companys, data: data }
+            });
 
-                allJobsData.push(...newJobsData);
+            allJobsData.push(...newJobsData.data);
+            allCompanies.push(...newJobsData.company)
 
-                const nextPageLink = await page.evaluate((currentPage) => {
-                    const nextButton = document.querySelector(`a[title="Page: ${currentPage + 1}"]`);
-                    return nextButton ? nextButton.href : null;
-                }, currentPage);
+            const nextPageLink = await page.evaluate((currentPage) => {
+                const nextButton = document.querySelector(`a[title="Page: ${currentPage + 1}"]`);
+                return nextButton ? nextButton.href : null;
+            }, currentPage);
 
-                if (!nextPageLink) {
-                    break;
-                }
-
-                await page.goto(nextPageLink, { waitUntil: 'networkidle0' });
-                if(currentPage === 4 ) break
-                currentPage++;
+            if (!nextPageLink) {
+                break;
             }
 
-            await browser.close();
-
-            // Excel generation
-            const wb = new xl.Workbook();
-            const ws = wb.addWorksheet('links_sheet');
-
-            // Set worksheet headers
-            ws.cell(1, 1).string("Company Name");
-            ws.cell(1, 2).string("Title");
-            ws.cell(1, 3).string("Link");
-
-            const linkStyle ={
-                font: {
-                  color: '#0000EE', // Blue color
-                }
-              };
-
-            // Write scraped data to worksheet
-            allJobsData.forEach((item, index) => {
-                ws.cell(index + 2, 1).string(item.company);
-                ws.cell(index + 2, 2).string(item.title);
-                ws.cell(index + 2, 3).string(item.link).style(linkStyle);
-            });
-
-            // Generate Excel buffer and send response
-            wb.writeToBuffer().then((buffer) => {
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.setHeader('Content-Disposition', `attachment; filename="${keyword}.xlsx"`);
-                res.end(buffer);
-            });
-        } catch (error) {
-            console.error(error);
-            // Handle errors appropriately, send error response to user
+            await page.goto(nextPageLink, { waitUntil: 'networkidle0' });
+            if (currentPage === 4) break
+            currentPage++;
         }
+
+        await browser.close();
+        const empName = await LinkedInPeople(allCompanies)
+
+        // Excel generation
+        const wb = new xl.Workbook();
+        const ws = wb.addWorksheet('links_sheet');
+
+        // Set worksheet headers
+        ws.cell(1, 1).string("Company Name");
+        ws.cell(1, 2).string("Title");
+        ws.cell(1, 3).string("Link");
+        ws.cell(1, 4).string("People");
+
+        const linkStyle = {
+            font: {
+                color: '#0000EE', // Blue color
+            }
+        };
+
+        // Write scraped data to worksheet
+        allJobsData.forEach((item, index) => {
+            ws.cell(index + 2, 1).string(item.company);
+            ws.cell(index + 2, 2).string(item.title);
+            ws.cell(index + 2, 3).string(item.link).style(linkStyle);
+            if (empName[index]) { // Check if there is a corresponding people value
+                ws.cell(index + 2, 4).string(empName[index]);
+            } else {
+                ws.cell(index + 2, 4).string(" ");
+            }
+        });
+
+        // Generate Excel buffer and send response
+        wb.writeToBuffer().then((buffer) => {
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename="${keyword}.xlsx"`);
+            res.end(buffer);
+        });
+    } catch (error) {
+        console.error(error);
+        // Handle errors appropriately, send error response to user
     }
+}
