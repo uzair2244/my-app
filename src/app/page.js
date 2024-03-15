@@ -2,7 +2,7 @@
 import { useState} from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import CSS for styling
-import SearchBar from './Components/SearchBar';
+import SearchBar from '../Components/SearchBar';
 
 const Home = () => {
   const [excelUrl, setExcelUrl] = useState('');
