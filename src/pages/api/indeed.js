@@ -10,9 +10,8 @@ export default async function handler(req, res) {
     // 1. Launch headless Puppeteer browser with optional User-Agent
     const browser = await puppeteer.launch({
       headless: true,
-      args: [`--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36`,
-        '--no-sandbox',
-        '--disable-setuid-sandbox',] // Optional User-Agent
+      args: ['--no-sandbox',
+        '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1080, height: 1024 });
